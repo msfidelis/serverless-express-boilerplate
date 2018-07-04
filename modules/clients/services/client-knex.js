@@ -7,7 +7,30 @@ class ClientService {
     constructor() {}
 
     listClients() {
-
+        return new Promise((resolve, reject) => {
+            db.client('clients')
+                .select(['id', 'name'])
+                .then(records => {
+                    resolve(records.map(record => {
+                        record.actions = {
+                            detail: {
+                                method: "GET",
+                                href: `/v1/clients/${record.id}`
+                            },
+                            update: {
+                                method: "PUT",
+                                href: `/v1/clients/${record.id}`
+                            },
+                            delete: {
+                                method: "DELETE",
+                                href: `/v1/clients/${record.id}`
+                            }
+                        };
+                        return record;
+                    }))
+                })
+                .catch(err => reject(err));
+        });
     }
 
     /**
@@ -15,7 +38,30 @@ class ClientService {
      * @param {*} page 
      */
     paginateClients(page = 1) {
-        
+        return new Promise((resolve, reject) => {
+            db.client('clients')
+                .select(['id', 'name'])
+                .then(records => {
+                    resolve(records.map(record => {
+                        record.actions = {
+                            detail: {
+                                method: "GET",
+                                href: `/v1/clients/${record.id}`
+                            },
+                            update: {
+                                method: "PUT",
+                                href: `/v1/clients/${record.id}`
+                            },
+                            delete: {
+                                method: "DELETE",
+                                href: `/v1/clients/${record.id}`
+                            }
+                        };
+                        return record;
+                    }))
+                })
+                .catch(err => reject(err));
+        });
     }
 
     /**
@@ -58,7 +104,28 @@ class ClientService {
             db.client('clients')
                 .select('*')
                 .where({id: id})
-                .then(client => resolve(client[0]))
+                .then(clients => {
+
+                    if (clients.length == 0) reject({status: 404, message: `client ${id} not found`});
+                    const client = clients[0];
+
+                    client.actions = {
+                        detail: {
+                            method: "GET",
+                            href: `/v1/clients/${client.id}`
+                        },
+                        update: {
+                            method: "PUT",
+                            href: `/v1/clients/${client.id}`
+                        },
+                        delete: {
+                            method: "DELETE",
+                            href: `/v1/clients/${client.id}`
+                        }
+                    };
+
+                    resolve(client);
+                })
                 .catch(err => reject(err))
         });
     }

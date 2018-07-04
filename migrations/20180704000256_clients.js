@@ -8,11 +8,12 @@
 exports.up = function(knex, Promise) {
     return Promise.all([
 		knex.schema.createTable('clients', (table) => {
-  			table.increments('id').primary()
-  			table.string('name').notNullable()
-            table.string('email')
-            table.string('phone')
-  			table.timestamps()
+  			table.increments('id').primary();
+  			table.string('name').notNullable();
+            table.string('email');
+            table.string('phone');
+            table.integer('active').notNullable().default(1);
+  			table.timestamps();
  		 })
 	]);
 };

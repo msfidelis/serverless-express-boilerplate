@@ -8,7 +8,8 @@ const service = require('../services/client-knex');
  * @param {*} res 
  */
 module.exports.list = (req, res) => {
-    res.status(200).send({message:"listing"});
+    service.listClients()
+        .then(clients => res.status(200).send(clients))
 }
 
 /**
@@ -17,7 +18,16 @@ module.exports.list = (req, res) => {
  * @param {*} res 
  */
 module.exports.detail = (req, res) => {
-    res.status(200).send({message:"detail"});
+    const id = req.params.id;
+    service.detailClient(id)
+        .then(client => {
+            res.status(200).send(client)
+        })
+        .catch(err => {
+            const status    = err.status  || 500;
+            const message   = err.message || err;
+            res.status(status).send(message);
+        })
 }
 
 /**
