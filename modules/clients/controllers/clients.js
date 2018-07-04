@@ -26,7 +26,8 @@ module.exports.detail = (req, res) => {
         .catch(err => {
             const status    = err.status  || 500;
             const message   = err.message || err;
-            res.status(status).send(message);
+            const response  = {status: status, message: message};
+            res.status(status).send(response);
         })
 }
 
