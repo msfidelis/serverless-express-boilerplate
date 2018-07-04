@@ -14,7 +14,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 consign()
-    .include('controllers')
+    .include('routes')
     .into(app);
 
 module.exports = app;
