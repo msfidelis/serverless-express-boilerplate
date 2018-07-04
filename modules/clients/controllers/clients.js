@@ -1,12 +1,14 @@
 'use strict';
 
+const service = require('../services/client-knex');
+
 /**
  * 
  * @param {*} req 
  * @param {*} res 
  */
 module.exports.list = (req, res) => {
-    res.status(200).send({message:"oi"});
+    res.status(200).send({message:"listing"});
 }
 
 /**
@@ -15,7 +17,7 @@ module.exports.list = (req, res) => {
  * @param {*} res 
  */
 module.exports.detail = (req, res) => {
-    res.status(200).send({message:"oi"});
+    res.status(200).send({message:"detail"});
 }
 
 /**
@@ -24,7 +26,8 @@ module.exports.detail = (req, res) => {
  * @param {*} res 
  */
 module.exports.create = (req, res) => {
-    res.status(200).send({message:"oi"});
+    service.createClient(req.body)
+        .then(client => res.status(201).send(client));
 }
 
 /**
@@ -33,7 +36,7 @@ module.exports.create = (req, res) => {
  * @param {*} res 
  */
 module.exports.update = (req, res) => {
-    res.status(200).send({message:"oi"});
+    res.status(200).send({message:"update"});
 }
 
 /**
@@ -42,5 +45,5 @@ module.exports.update = (req, res) => {
  * @param {*} res 
  */
 module.exports.delete = (req, res) => {
-    res.status(200).send({message:"oi"});
+    res.status(200).send({message:"delete"});
 }
