@@ -1,0 +1,14 @@
+{
+    "DATABASES": {
+        "POSTGRESQL": {
+            "HOST": "0.0.0.0",
+            "PORT": "5432",
+            "USER": "pguser",
+            "PASSWORD": "thecakeisalie",
+            "DATABASE": "serverless-db"
+        },
+        "MONGODB": {
+
+        }
+    }
+}
