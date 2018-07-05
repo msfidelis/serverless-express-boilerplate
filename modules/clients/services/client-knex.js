@@ -6,42 +6,14 @@ class ClientService {
 
     constructor() {}
 
+    /**
+     * List all database clients
+     */
     listClients() {
         return new Promise((resolve, reject) => {
             db.client('clients')
                 .select(['id', 'name'])
                 .where({active: 1})
-                .then(records => {
-                    resolve(records.map(record => {
-                        record.actions = {
-                            detail: {
-                                method: "GET",
-                                href: `/v1/clients/${record.id}`
-                            },
-                            update: {
-                                method: "PUT",
-                                href: `/v1/clients/${record.id}`
-                            },
-                            delete: {
-                                method: "DELETE",
-                                href: `/v1/clients/${record.id}`
-                            }
-                        };
-                        return record;
-                    }))
-                })
-                .catch(err => reject(err));
-        });
-    }
-
-    /**
-     * Paginate Listing
-     * @param {*} page 
-     */
-    paginateClients(page = 1) {
-        return new Promise((resolve, reject) => {
-            db.client('clients')
-                .select(['id', 'name'])
                 .then(records => {
                     resolve(records.map(record => {
                         record.actions = {
@@ -104,9 +76,13 @@ class ClientService {
      * @param {*} id 
      * @param {*} client 
      */
-    updateClient(id, client) {
+    updateClient(id, params) {
         return new Promise((resolve, reject) => {
-
+            db.client('clients')
+                .update(params)
+                .where({id: id})
+                .then(success => resolve(success))
+                .catch(err => reject(err));
         });
     };
 
@@ -146,9 +122,17 @@ class ClientService {
         });
     }
 
+    /**
+     * Delete a client using id
+     * @param {*} id 
+     */
     deleteClient(id) {
         return new Promise((resolve, reject) => {
-
+            db.client('clients')
+                .delete()
+                .where({id: id})
+                .then(success => resolve(success))
+                .catch(err => reject(err));
         });
     }
 
