@@ -56,5 +56,18 @@ module.exports.update = (req, res) => {
  * @param {*} res 
  */
 module.exports.delete = (req, res) => {
-    res.status(200).send({message:"delete"});
+    const id = req.params.id;
+
+    service.deactivateClient(id)
+        .then(success => {
+            res.status(204).send({});
+        })
+        .catch(err => {
+            console.log(err);
+            const status    = err.status  || 500;
+            const message   = err.message || err;
+            const response  = {status: status, message: message};
+            res.status(status).send(response);
+        });
+        
 }

@@ -10,6 +10,7 @@ class ClientService {
         return new Promise((resolve, reject) => {
             db.client('clients')
                 .select(['id', 'name'])
+                .where({active: 1})
                 .then(records => {
                     resolve(records.map(record => {
                         record.actions = {
@@ -82,7 +83,21 @@ class ClientService {
                 .then(success => resolve(success[0]))
                 .catch(err => reject(err));
         });
-    }
+    };
+
+    /**
+     * Deativate a Client
+     * @param {*} id 
+     */
+    deactivateClient(id) {
+        return new Promise((resolve, reject) => {
+            db.client('clients')
+                .update({active: 0})
+                .where({id: id})
+                .then(success => resolve(success))
+                .catch(err => reject(err));
+        });
+    };
 
     /**
      * Update a client using a id
@@ -93,7 +108,7 @@ class ClientService {
         return new Promise((resolve, reject) => {
 
         });
-    }
+    };
 
     /**
      * Detail Clients
@@ -103,10 +118,11 @@ class ClientService {
         return new Promise((resolve, reject) => {
             db.client('clients')
                 .select('*')
-                .where({id: id})
+                .where({id: id, active: 1})
                 .then(clients => {
 
                     if (clients.length == 0) reject({status: 404, message: `client ${id} not found`});
+                    
                     const client = clients[0];
 
                     client.actions = {
