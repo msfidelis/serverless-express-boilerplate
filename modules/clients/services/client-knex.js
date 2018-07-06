@@ -15,23 +15,8 @@ class ClientService {
                 .select(['id', 'name'])
                 .where({active: 1})
                 .then(records => {
-                    resolve(records.map(record => {
-                        record.actions = {
-                            detail: {
-                                method: "GET",
-                                href: `/v1/clients/${record.id}`
-                            },
-                            update: {
-                                method: "PUT",
-                                href: `/v1/clients/${record.id}`
-                            },
-                            delete: {
-                                method: "DELETE",
-                                href: `/v1/clients/${record.id}`
-                            }
-                        };
-                        return record;
-                    }))
+                    const clients = this._hateoas(records);
+                    resolve(clients);
                 })
                 .catch(err => reject(err));
         });
@@ -52,7 +37,10 @@ class ClientService {
             db.client('clients')
                 .insert(client)
                 .returning(['id', 'name', 'email', 'phone'])
-                .then(success => resolve(success[0]))
+                .then(record => {
+                    const client = this._hateoas(record);
+                    resolve(client[0])
+                })
                 .catch(err => reject(err));
         });
     };
@@ -81,7 +69,11 @@ class ClientService {
             db.client('clients')
                 .update(params)
                 .where({id: id})
-                .then(success => resolve(success))
+                .returning(['id','name', 'email', 'phone'])
+                .then(updatedClient => {
+                    const client = this._hateoas(updatedClient);
+                    resolve(client[0]);
+                })
                 .catch(err => reject(err));
         });
     };
@@ -95,32 +87,16 @@ class ClientService {
             db.client('clients')
                 .select('*')
                 .where({id: id, active: 1})
-                .then(clients => {
+                .then(clientsRaw => {
+                    if (clientsRaw.length == 0) reject({status: 404, message: `client ${id} not found`});
 
-                    if (clients.length == 0) reject({status: 404, message: `client ${id} not found`});
-                    
+                    const clients = this._hateoas(clientsRaw);                    
                     const client = clients[0];
-
-                    client.actions = {
-                        detail: {
-                            method: "GET",
-                            href: `/v1/clients/${client.id}`
-                        },
-                        update: {
-                            method: "PUT",
-                            href: `/v1/clients/${client.id}`
-                        },
-                        delete: {
-                            method: "DELETE",
-                            href: `/v1/clients/${client.id}`
-                        }
-                    };
-
                     resolve(client);
                 })
                 .catch(err => reject(err))
         });
-    }
+    };
 
     /**
      * Delete a client using id
@@ -134,8 +110,32 @@ class ClientService {
                 .then(success => resolve(success))
                 .catch(err => reject(err));
         });
-    }
+    };
 
-}
+    /**
+     * Create a Hateoas
+     * @param {*} clients 
+     */
+    _hateoas(clients) {
+        return clients.map(client => {
+            client.actions = {
+                detail: {
+                    method: "GET",
+                    href: `/v1/clients/${client.id}`
+                },
+                update: {
+                    method: "PUT",
+                    href: `/v1/clients/${client.id}`
+                },
+                delete: {
+                    method: "DELETE",
+                    href: `/v1/clients/${client.id}`
+                }
+            };
+            return client;
+        });
+    };
+    
+};
 
 module.exports = new ClientService();
